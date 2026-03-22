@@ -1,0 +1,1376 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Begehung · Kelc 2026</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+  :root {
+    --bg: #0f1117;
+    --surface: #181c27;
+    --surface2: #1e2335;
+    --border: #2a3050;
+    --accent: #4f8ef7;
+    --accent2: #f7934f;
+    --accent3: #4fd6a0;
+    --text: #e8eaf2;
+    --text2: #8892b0;
+    --text3: #4a5580;
+    --danger: #f74f6a;
+    --warn: #f7c44f;
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  html { font-size: 16px; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overscroll-behavior: none;
+  }
+
+  /* HEADER */
+  .app-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(15,17,23,0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .app-header h1 {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--accent);
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .header-actions { display: flex; gap: 8px; flex-shrink: 0; }
+
+  .btn-icon {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 8px 12px;
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    font-family: 'DM Mono', monospace;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.15s;
+  }
+  .btn-icon:active { transform: scale(0.96); background: var(--border); }
+  .btn-icon.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  /* PROGRESS BAR */
+  .progress-bar {
+    height: 3px;
+    background: var(--border);
+    position: sticky;
+    top: 57px;
+    z-index: 99;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent3));
+    transition: width 0.4s ease;
+    width: 0%;
+  }
+
+  /* NAV DOTS */
+  .section-nav {
+    display: flex;
+    gap: 6px;
+    padding: 12px 16px 4px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .section-nav::-webkit-scrollbar { display: none; }
+
+  .nav-dot {
+    flex-shrink: 0;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-family: 'DM Mono', monospace;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text2);
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .nav-dot.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .nav-dot.done { border-color: var(--accent3); color: var(--accent3); }
+
+  /* MAIN CONTENT */
+  .content { padding: 16px; max-width: 600px; margin: 0 auto; }
+
+  /* SECTIONS */
+  .section {
+    display: none;
+    animation: fadeIn 0.2s ease;
+  }
+  .section.active { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .section-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    background: rgba(79,142,247,0.1);
+    padding: 4px 8px;
+    border-radius: 6px;
+    flex-shrink: 0;
+  }
+
+  .section-title h2 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  /* CARDS */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px;
+    margin-bottom: 12px;
+  }
+
+  .card-label {
+    font-size: 11px;
+    font-family: 'DM Mono', monospace;
+    color: var(--text2);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 8px;
+  }
+
+  /* INPUTS */
+  textarea, input[type="text"], input[type="number"] {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    padding: 10px 12px;
+    transition: border-color 0.15s;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  textarea:focus, input[type="text"]:focus, input[type="number"]:focus {
+    outline: none;
+    border-color: var(--accent);
+    background: #1a2040;
+  }
+
+  textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
+
+  /* MEASURE GRID */
+  .measure-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  .measure-item label {
+    display: block;
+    font-size: 10px;
+    font-family: 'DM Mono', monospace;
+    color: var(--text3);
+    margin-bottom: 4px;
+  }
+
+  /* CHECKBOXES */
+  .check-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+
+  .check-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 10px 10px;
+    cursor: pointer;
+    transition: all 0.15s;
+    min-height: 44px;
+  }
+
+  .check-item:active { transform: scale(0.97); }
+
+  .check-item.checked {
+    background: rgba(79,142,247,0.1);
+    border-color: var(--accent);
+  }
+
+  .check-item input[type="checkbox"] { display: none; }
+
+  .check-box {
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--text3);
+    border-radius: 4px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+    font-size: 11px;
+  }
+
+  .check-item.checked .check-box {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+
+  .check-label {
+    font-size: 13px;
+    line-height: 1.3;
+    color: var(--text);
+  }
+
+  /* RADIO GROUP (3-way: mit / entsorg / unklar) */
+  .radio3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    border: 1px solid var(--border);
+    margin-bottom: 4px;
+  }
+
+  .radio3 label {
+    text-align: center;
+    padding: 8px 4px;
+    font-size: 11px;
+    font-family: 'DM Mono', monospace;
+    cursor: pointer;
+    background: var(--surface2);
+    color: var(--text3);
+    transition: all 0.15s;
+    border-right: 1px solid var(--border);
+  }
+
+  .radio3 label:last-child { border-right: none; }
+  .radio3 input { display: none; }
+  .radio3 input:checked + label { background: var(--accent); color: #fff; }
+  .radio3 .r-entsorg input:checked + label { background: var(--danger); color: #fff; }
+  .radio3 .r-unklar input:checked + label { background: var(--warn); color: #000; }
+
+  .moebel-row {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+    margin-bottom: 6px;
+  }
+
+  .moebel-name {
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 6px;
+    color: var(--text);
+  }
+
+  /* RAUM BLOCK */
+  .raum-block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px;
+    margin-bottom: 10px;
+  }
+
+  .raum-name {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--accent3);
+    margin-bottom: 10px;
+    letter-spacing: 0.05em;
+  }
+
+  /* BELAG CHIPS */
+  .belag-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+  }
+
+  .chip {
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-family: 'DM Mono', monospace;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text2);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .chip.selected {
+    background: rgba(79,214,160,0.15);
+    border-color: var(--accent3);
+    color: var(--accent3);
+  }
+
+  .chip:active { transform: scale(0.95); }
+
+  /* SECTION NAV BUTTONS */
+  .section-footer {
+    display: flex;
+    gap: 10px;
+    margin-top: 24px;
+    margin-bottom: 32px;
+  }
+
+  .btn {
+    flex: 1;
+    padding: 14px;
+    border-radius: var(--radius);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .btn:active { transform: scale(0.97); }
+  .btn-back { background: var(--surface2); color: var(--text2); }
+  .btn-next { background: var(--accent); color: #fff; }
+  .btn-export { background: var(--accent3); color: #000; font-weight: 600; }
+
+  /* SAVE INDICATOR */
+  .save-indicator {
+    position: fixed;
+    bottom: 16px;
+    right: 16px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 6px 12px;
+    font-size: 11px;
+    font-family: 'DM Mono', monospace;
+    color: var(--accent3);
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+    z-index: 200;
+  }
+  .save-indicator.show { opacity: 1; }
+
+  /* HINT */
+  .hint {
+    font-size: 12px;
+    color: var(--text3);
+    background: rgba(79,142,247,0.06);
+    border-left: 2px solid var(--accent);
+    padding: 8px 10px;
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    margin-bottom: 12px;
+    line-height: 1.4;
+  }
+
+  /* META TABLE */
+  .meta-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .meta-item label {
+    display: block;
+    font-size: 11px;
+    font-family: 'DM Mono', monospace;
+    color: var(--text3);
+    margin-bottom: 4px;
+  }
+
+  /* TODO TABLE */
+  .todo-row {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+    margin-bottom: 6px;
+  }
+
+  .todo-row input {
+    margin-bottom: 6px;
+  }
+
+  .todo-sub {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+
+  .todo-sub input { margin-bottom: 0; font-size: 13px; }
+
+  /* EXPORT SCREEN */
+  .export-area {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text2);
+    white-space: pre-wrap;
+    word-break: break-all;
+    max-height: 300px;
+    overflow-y: auto;
+    margin-bottom: 12px;
+  }
+
+  hr.divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 16px 0;
+  }
+
+  .full-btn {
+    width: 100%;
+    padding: 16px;
+    border-radius: var(--radius);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: all 0.15s;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .full-btn:active { transform: scale(0.98); }
+  .full-btn.green { background: var(--accent3); color: #000; }
+  .full-btn.blue { background: var(--accent); color: #fff; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<div class="app-header">
+  <h1>📋 Begehung · Kelc 2026</h1>
+  <div class="header-actions">
+    <button class="btn-icon" onclick="showExport()">Export</button>
+    <button class="btn-icon primary" onclick="saveAll()">💾</button>
+  </div>
+</div>
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+<div class="section-nav" id="sectionNav"></div>
+
+<div class="content">
+
+<!-- ═══════════════════════════════════ SECTION 0: META -->
+<div class="section active" id="sec0">
+  <div class="section-title">
+    <span class="section-num">META</span>
+    <h2>Begehungsdaten</h2>
+  </div>
+  <div class="meta-grid">
+    <div class="meta-item">
+      <label>Datum</label>
+      <input type="text" id="meta_datum" placeholder="22.03.2026">
+    </div>
+    <div class="meta-item">
+      <label>Uhrzeit</label>
+      <input type="text" id="meta_uhrzeit" placeholder="14:00">
+    </div>
+    <div class="meta-item" style="grid-column:1/-1">
+      <label>Anwesende</label>
+      <input type="text" id="meta_anwesende" placeholder="Marian, Marija...">
+    </div>
+  </div>
+  <div class="section-footer">
+    <button class="btn btn-next" onclick="goTo(1)">Weiter →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════ SECTION 1: ALLGEMEINES -->
+<div class="section" id="sec1">
+  <div class="section-title">
+    <span class="section-num">01</span>
+    <h2>Allgemeines & Struktur</h2>
+  </div>
+  <div class="hint">Anzahl und Nutzung der Räume, Besonderheiten Gebäude/Hausflur.</div>
+
+  <div class="card">
+    <div class="card-label">Raumaufteilung / Nutzung</div>
+    <textarea id="s1_raumaufteilung" rows="4" placeholder="z.B. Wohnzimmer, Schlafzimmer, Küche, Bad, Flur…"></textarea>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Maße & Zugänglichkeit</div>
+    <div class="measure-grid" style="grid-template-columns:1fr 1fr;">
+      <div class="measure-item">
+        <label>Eingangstür Breite (cm)</label>
+        <input type="number" id="s1_tuer_breite" placeholder="90">
+      </div>
+      <div class="measure-item">
+        <label>Treppenhaus engste Stelle (cm)</label>
+        <input type="number" id="s1_treppen_breite" placeholder="120">
+      </div>
+    </div>
+    <div class="measure-item" style="margin-top:8px">
+      <label>Gesamtfläche geschätzt (m²)</label>
+      <input type="number" id="s1_flaeche" placeholder="50">
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Besonderheiten Gebäude / Hausflur</div>
+    <textarea id="s1_besonderheiten" rows="3" placeholder="Stufen, enge Kurven, Aufzug vorhanden?…"></textarea>
+  </div>
+
+  <div class="section-footer">
+    <button class="btn btn-back" onclick="goTo(0)">← Zurück</button>
+    <button class="btn btn-next" onclick="goTo(2)">Weiter →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════ SECTION 2: BODENBELÄGE -->
+<div class="section" id="sec2">
+  <div class="section-title">
+    <span class="section-num">02</span>
+    <h2>Bodenbeläge & Aufmaß</h2>
+  </div>
+  <div class="hint">Länge × Breite je Raum. Material wird vom Auftraggeber gestellt — hier nur Maße und Wunsch-Belag notieren.</div>
+
+  <div id="raeume_container"></div>
+
+  <div class="card">
+    <div class="card-label">Materialwünsche / Farbvorstellungen Mama</div>
+    <textarea id="s2_farbwunsch" rows="3" placeholder="z.B. heller Teppich, kein Grau…"></textarea>
+  </div>
+
+  <div class="section-footer">
+    <button class="btn btn-back" onclick="goTo(1)">← Zurück</button>
+    <button class="btn btn-next" onclick="goTo(3)">Weiter →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════ SECTION 3: MOBILIAR -->
+<div class="section" id="sec3">
+  <div class="section-title">
+    <span class="section-num">03</span>
+    <h2>Mobiliar & Küche</h2>
+  </div>
+  <div class="hint">Für jedes Möbelstück: kommt mit / wird entsorgt / unklar</div>
+
+  <div id="moebel_container"></div>
+
+  <hr class="divider">
+  <div class="section-title" style="margin-top:4px">
+    <span class="section-num" style="background:rgba(247,147,79,0.1);color:var(--accent2)">KÜ</span>
+    <h2>Küche</h2>
+  </div>
+
+  <div class="check-group" id="kueche_checks" style="margin-bottom:12px"></div>
+
+  <div class="card">
+    <div class="card-label">Küchennotizen (Maße, Anschlüsse, Besonderheiten)</div>
+    <textarea id="s3_kueche_notiz" rows="3" placeholder="z.B. Einbauküche 280cm, Ceranfeld 60cm…"></textarea>
+  </div>
+
+  <div class="section-footer">
+    <button class="btn btn-back" onclick="goTo(2)">← Zurück</button>
+    <button class="btn btn-next" onclick="goTo(4)">Weiter →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════ SECTION 4: ENTSORGUNG -->
+<div class="section" id="sec4">
+  <div class="section-title">
+    <span class="section-num">04</span>
+    <h2>Entsorgung</h2>
+  </div>
+  <div class="hint">Was bleibt zurück? Grobe Mengenangabe hilft bei der Kalkulation.</div>
+
+  <div class="card">
+    <div class="card-label">Zu entsorgende Gegenstände</div>
+    <textarea id="s4_entsorgung" rows="5" placeholder="z.B. alter Schrank (groß), Matratze, ca. 5 Säcke Kleinkram…"></textarea>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Mengenabschätzung</div>
+    <div class="measure-grid" style="grid-template-columns:1fr 1fr;">
+      <div class="measure-item">
+        <label>Sperrmüll (grob)</label>
+        <input type="text" id="s4_sperrmuell" placeholder="z.B. 3 Möbel">
+      </div>
+      <div class="measure-item">
+        <label>Säcke / Kartons ca.</label>
+        <input type="text" id="s4_saecke" placeholder="z.B. 8">
+      </div>
+    </div>
+  </div>
+
+  <div class="section-footer">
+    <button class="btn btn-back" onclick="goTo(3)">← Zurück</button>
+    <button class="btn btn-next" onclick="goTo(5)">Weiter →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════ SECTION 5: LOGISTIK -->
+<div class="section" id="sec5">
+  <div class="section-title">
+    <span class="section-num">05</span>
+    <h2>Logistik & Halteverbot</h2>
+  </div>
+  <div class="hint">Gebäude liegt direkt an einer Kreuzung — Situation vor Ort beobachten.</div>
+
+  <div class="check-group" id="logistik_checks" style="margin-bottom:12px"></div>
+
+  <div class="card">
+    <div class="card-label">Skizze / Beschreibung Kreuzungssituation</div>
+    <textarea id="s5_kreuzung" rows="5" placeholder="Beschreibe Aufstellmöglichkeiten für LKW, Parkverbote, Abstände…"></textarea>
+  </div>
+
+  <div class="section-footer">
+    <button class="btn btn-back" onclick="goTo(4)">← Zurück</button>
+    <button class="btn btn-next" onclick="goTo(6)">Weiter →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════ SECTION 6: BESONDERES -->
+<div class="section" id="sec6">
+  <div class="section-title">
+    <span class="section-num">06</span>
+    <h2>Besondere Gegenstände</h2>
+  </div>
+  <div class="hint">Empfindliches, Wertvolles, Hilfsmittel — alles was besondere Behandlung braucht.</div>
+
+  <div class="check-group" id="besonders_checks" style="margin-bottom:12px"></div>
+
+  <div class="card">
+    <div class="card-label">Notizen zu besonderen Gegenständen</div>
+    <textarea id="s6_notiz" rows="3" placeholder="z.B. Spiegel 80×120cm, TV 55 Zoll…"></textarea>
+  </div>
+
+  <div class="section-footer">
+    <button class="btn btn-back" onclick="goTo(5)">← Zurück</button>
+    <button class="btn btn-next" onclick="goTo(7)">Weiter →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════ SECTION 7: KARTONS -->
+<div class="section" id="sec7">
+  <div class="section-title">
+    <span class="section-num">07</span>
+    <h2>Kartons & Packaufwand</h2>
+  </div>
+
+  <div id="kartons_container"></div>
+
+  <div class="section-footer">
+    <button class="btn btn-back" onclick="goTo(6)">← Zurück</button>
+    <button class="btn btn-next" onclick="goTo(8)">Weiter →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════ SECTION 8: MAMA -->
+<div class="section" id="sec8">
+  <div class="section-title">
+    <span class="section-num">08</span>
+    <h2>Wünsche von Mama</h2>
+  </div>
+  <div class="hint">Ihre Wünsche, Ängste und Prioritäten — direkt aus dem Gespräch.</div>
+
+  <div class="card">
+    <div class="card-label">Was ist ihr besonders wichtig?</div>
+    <textarea id="s8_wichtig" rows="4" placeholder="z.B. Bett muss zuerst aufgebaut werden…"></textarea>
+  </div>
+  <div class="card">
+    <div class="card-label">Was bereitet ihr Sorgen?</div>
+    <textarea id="s8_sorgen" rows="4" placeholder="z.B. Küche soll schnell funktionieren…"></textarea>
+  </div>
+  <div class="card">
+    <div class="card-label">Sonstige Wünsche & Anmerkungen</div>
+    <textarea id="s8_sonstiges" rows="4" placeholder="Freitext…"></textarea>
+  </div>
+
+  <div class="section-footer">
+    <button class="btn btn-back" onclick="goTo(7)">← Zurück</button>
+    <button class="btn btn-next" onclick="goTo(9)">Weiter →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════ SECTION 9: TODOS -->
+<div class="section" id="sec9">
+  <div class="section-title">
+    <span class="section-num">09</span>
+    <h2>Offene ToDos</h2>
+  </div>
+
+  <div id="todos_container"></div>
+  <button class="full-btn blue" onclick="addTodo()" style="margin-bottom:16px">+ ToDo hinzufügen</button>
+
+  <div class="section-footer">
+    <button class="btn btn-back" onclick="goTo(8)">← Zurück</button>
+    <button class="btn btn-export" onclick="showExport()">📤 Export</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════ SECTION 10: EXPORT -->
+<div class="section" id="sec10">
+  <div class="section-title">
+    <span class="section-num">✓</span>
+    <h2>Export & Fertig</h2>
+  </div>
+
+  <div class="hint">JSON-Datei herunterladen und hier in Claude einfügen — dann wird die Angebotsanfrage automatisch befüllt.</div>
+
+  <button class="full-btn green" onclick="downloadJSON()">⬇ JSON herunterladen</button>
+  <button class="full-btn blue" onclick="copyJSON()">📋 In Zwischenablage kopieren</button>
+
+  <hr class="divider">
+  <div class="card-label" style="margin-bottom:8px">Vorschau</div>
+  <div class="export-area" id="exportPreview"></div>
+
+  <div class="section-footer">
+    <button class="btn btn-back" onclick="goTo(9)">← Zurück</button>
+  </div>
+</div>
+
+</div><!-- /content -->
+
+<div class="save-indicator" id="saveIndicator">💾 gespeichert</div>
+
+<script>
+// ═══════════════════ DATA STRUCTURES ═══════════════════
+
+const RAEUME = [
+  { id: 'wohnzimmer', name: 'Wohnzimmer' },
+  { id: 'schlafzimmer', name: 'Schlafzimmer' },
+  { id: 'zimmer3', name: 'Zimmer 3 / weitere' },
+  { id: 'flur', name: 'Flur / Diele' },
+  { id: 'kueche_raum', name: 'Küche' },
+];
+
+const BELAEGE = ['Teppich', 'PVC', 'Laminat', 'Fliesen', 'wie bisher', 'kein Wechsel'];
+
+const MOEBEL = [
+  'Sofa / Couch', 'Sessel', 'Wohnzimmertisch', 'Sideboard / Anrichte',
+  'Schrank (groß)', 'Schrank (klein)', 'Bett / Bettgestell',
+  'Nachtschränkchen', 'Kommode', 'Kleiderschrank',
+  'Esstisch', 'Stühle', 'Regal / Bücherregal',
+  'TV + Möbel', 'Sonstiges 1', 'Sonstiges 2'
+];
+
+const KUECHE_CHECKS = [
+  'Einbauküche (fest verbaut)', 'Freistehende Einzelgeräte',
+  'Kühlschrank kommt mit', 'Herd / Ceranfeld kommt mit',
+  'Spülmaschine kommt mit', 'Dunstabzug kommt mit',
+  'Mikrowelle kommt mit', 'Oberschränke kommen mit',
+  'Unterschränke kommen mit', 'Küchenzeile komplett',
+  'Teile werden entsorgt', 'Küche passt voraussichtlich'
+];
+
+const LOGISTIK_CHECKS = [
+  'Kreuzungsbereich fotografiert', 'LKW-Aufstellfläche identifiziert',
+  'Fußweg Wohnung → LKW abgeschätzt', 'Treppenhaus Breite gemessen',
+  'Nachbarn informiert', 'Hausverwaltung kontaktiert',
+  'Parkverbotsschilder notiert', 'Anwohnerparken vorhanden?'
+];
+
+const BESONDERS_CHECKS = [
+  'Fernseher', 'Spiegel / Glasscheiben',
+  'Bilder / Wandkunst', 'Pflanzen',
+  'Rollator / Hilfsmittel', 'Medikamente / Kühlkette',
+  'Wertgegenstände (selbst!)', 'Dokumente (selbst!)',
+  'Antiquitäten', 'Sonstiges'
+];
+
+const KARTON_KATEGORIEN = [
+  'Bücher / Zeitschriften', 'Kleidung',
+  'Küche / Geschirr', 'Dekoration / Sonstiges',
+  'Persönliches / Dokumente'
+];
+
+const SECTIONS = [
+  'Meta', '01 Allg.', '02 Böden', '03 Möbel',
+  '04 Entsorg.', '05 Logistik', '06 Besond.',
+  '07 Kartons', '08 Mama', '09 ToDos', '✓ Export'
+];
+
+let currentSection = 0;
+let todoCount = 3;
+let saveTimeout = null;
+
+// ═══════════════════ INIT ═══════════════════
+
+function init() {
+  buildSectionNav();
+  buildRaeume();
+  buildMoebel();
+  buildCheckGroup('kueche_checks', KUECHE_CHECKS);
+  buildCheckGroup('logistik_checks', LOGISTIK_CHECKS);
+  buildCheckGroup('besonders_checks', BESONDERS_CHECKS);
+  buildKartons();
+  buildTodos();
+  loadAll();
+  attachAutoSave();
+  updateProgress();
+}
+
+function buildSectionNav() {
+  const nav = document.getElementById('sectionNav');
+  SECTIONS.forEach((name, i) => {
+    const btn = document.createElement('div');
+    btn.className = 'nav-dot' + (i === 0 ? ' active' : '');
+    btn.textContent = name;
+    btn.onclick = () => goTo(i);
+    btn.id = `nav${i}`;
+    nav.appendChild(btn);
+  });
+}
+
+function buildRaeume() {
+  const container = document.getElementById('raeume_container');
+  RAEUME.forEach(raum => {
+    const div = document.createElement('div');
+    div.className = 'raum-block';
+    div.innerHTML = `
+      <div class="raum-name">— ${raum.name.toUpperCase()} —</div>
+      <div class="measure-grid">
+        <div class="measure-item"><label>Länge (m)</label>
+          <input type="number" step="0.1" id="raum_${raum.id}_l" placeholder="0.0"></div>
+        <div class="measure-item"><label>Breite (m)</label>
+          <input type="number" step="0.1" id="raum_${raum.id}_b" placeholder="0.0"></div>
+        <div class="measure-item"><label>Aktueller Belag</label>
+          <input type="text" id="raum_${raum.id}_aktuell" placeholder="z.B. Teppich"></div>
+      </div>
+      <div class="card-label" style="margin-top:10px;margin-bottom:4px">Neuer Belag</div>
+      <div class="belag-chips" id="chips_${raum.id}"></div>
+      <input type="text" id="raum_${raum.id}_notiz" placeholder="Notizen…" style="margin-top:8px;font-size:13px">
+    `;
+    container.appendChild(div);
+
+    const chipsDiv = div.querySelector(`#chips_${raum.id}`);
+    BELAEGE.forEach(b => {
+      const chip = document.createElement('div');
+      chip.className = 'chip';
+      chip.textContent = b;
+      chip.dataset.raum = raum.id;
+      chip.dataset.belag = b;
+      chip.onclick = function() {
+        chipsDiv.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
+        this.classList.add('selected');
+        triggerSave();
+      };
+      chipsDiv.appendChild(chip);
+    });
+  });
+}
+
+function buildMoebel() {
+  const container = document.getElementById('moebel_container');
+  MOEBEL.forEach(name => {
+    const id = name.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+    const div = document.createElement('div');
+    div.className = 'moebel-row';
+    div.innerHTML = `
+      <div class="moebel-name">${name}</div>
+      <div class="radio3">
+        <div class="r-mit">
+          <input type="radio" name="mob_${id}" id="mob_${id}_mit" value="mit">
+          <label for="mob_${id}_mit">kommt mit</label>
+        </div>
+        <div class="r-entsorg">
+          <input type="radio" name="mob_${id}" id="mob_${id}_ents" value="entsorgung">
+          <label for="mob_${id}_ents">entsorgen</label>
+        </div>
+        <div class="r-unklar">
+          <input type="radio" name="mob_${id}" id="mob_${id}_unk" value="unklar">
+          <label for="mob_${id}_unk">unklar</label>
+        </div>
+      </div>
+    `;
+    container.appendChild(div);
+  });
+}
+
+function buildCheckGroup(containerId, items) {
+  const container = document.getElementById(containerId);
+  items.forEach(item => {
+    const id = 'chk_' + item.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+    const div = document.createElement('label');
+    div.className = 'check-item';
+    div.innerHTML = `
+      <input type="checkbox" id="${id}">
+      <div class="check-box">✓</div>
+      <span class="check-label">${item}</span>
+    `;
+    div.onclick = function(e) {
+      const cb = this.querySelector('input[type="checkbox"]');
+      cb.checked = !cb.checked;
+      this.classList.toggle('checked', cb.checked);
+      triggerSave();
+      e.preventDefault();
+    };
+    container.appendChild(div);
+  });
+}
+
+function buildKartons() {
+  const container = document.getElementById('kartons_container');
+  KARTON_KATEGORIEN.forEach(kat => {
+    const id = kat.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+    const div = document.createElement('div');
+    div.className = 'moebel-row';
+    div.innerHTML = `
+      <div class="moebel-name" style="margin-bottom:8px">${kat}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px">
+        <div class="measure-item"><label>Groß</label>
+          <input type="number" id="kart_${id}_gross" placeholder="0"></div>
+        <div class="measure-item"><label>Klein</label>
+          <input type="number" id="kart_${id}_klein" placeholder="0"></div>
+        <div class="measure-item"><label>Notiz</label>
+          <input type="text" id="kart_${id}_notiz" placeholder="…"></div>
+      </div>
+    `;
+    container.appendChild(div);
+  });
+
+  // GESAMT row
+  const gesamt = document.createElement('div');
+  gesamt.className = 'moebel-row';
+  gesamt.style.background = 'rgba(79,214,160,0.05)';
+  gesamt.style.borderColor = 'var(--accent3)';
+  gesamt.innerHTML = `
+    <div class="moebel-name" style="color:var(--accent3)">GESAMT (Schätzung)</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px">
+      <div class="measure-item"><label>Groß</label>
+        <input type="number" id="kart_gesamt_gross" placeholder="0"></div>
+      <div class="measure-item"><label>Klein</label>
+        <input type="number" id="kart_gesamt_klein" placeholder="0"></div>
+      <div class="measure-item"><label>Notiz</label>
+        <input type="text" id="kart_gesamt_notiz" placeholder="…"></div>
+    </div>
+  `;
+  container.appendChild(gesamt);
+}
+
+function buildTodos() {
+  const container = document.getElementById('todos_container');
+  for (let i = 0; i < todoCount; i++) {
+    addTodoRow(container, i);
+  }
+}
+
+function addTodo() {
+  const container = document.getElementById('todos_container');
+  addTodoRow(container, todoCount);
+  todoCount++;
+  triggerSave();
+}
+
+function addTodoRow(container, i) {
+  const div = document.createElement('div');
+  div.className = 'todo-row';
+  div.id = `todo_row_${i}`;
+  div.innerHTML = `
+    <input type="text" id="todo_${i}_aufgabe" placeholder="Aufgabe…" style="margin-bottom:6px">
+    <div class="todo-sub">
+      <input type="text" id="todo_${i}_zustaendig" placeholder="Zuständig">
+      <input type="text" id="todo_${i}_biswann" placeholder="Bis wann">
+    </div>
+  `;
+  container.appendChild(div);
+  attachAutoSaveToElement(div);
+}
+
+// ═══════════════════ NAVIGATION ═══════════════════
+
+function goTo(i) {
+  document.getElementById(`sec${currentSection}`).classList.remove('active');
+  document.getElementById(`nav${currentSection}`).classList.remove('active');
+  currentSection = i;
+  document.getElementById(`sec${i}`).classList.add('active');
+  document.getElementById(`nav${i}`).classList.add('active');
+  document.getElementById(`nav${i}`).scrollIntoView({ inline: 'center', behavior: 'smooth' });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  updateProgress();
+  if (i === 10) renderExport();
+}
+
+function updateProgress() {
+  const pct = (currentSection / (SECTIONS.length - 1)) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+}
+
+// ═══════════════════ AUTOSAVE ═══════════════════
+
+function attachAutoSave() {
+  document.querySelectorAll('input, textarea').forEach(el => {
+    el.addEventListener('input', triggerSave);
+    el.addEventListener('change', triggerSave);
+  });
+}
+
+function attachAutoSaveToElement(el) {
+  el.querySelectorAll('input, textarea').forEach(e => {
+    e.addEventListener('input', triggerSave);
+    e.addEventListener('change', triggerSave);
+  });
+}
+
+function triggerSave() {
+  clearTimeout(saveTimeout);
+  saveTimeout = setTimeout(() => {
+    saveAll();
+  }, 800);
+}
+
+function showSaveIndicator() {
+  const ind = document.getElementById('saveIndicator');
+  ind.classList.add('show');
+  setTimeout(() => ind.classList.remove('show'), 1500);
+}
+
+// ═══════════════════ COLLECT DATA ═══════════════════
+
+function collectData() {
+  const data = {
+    _version: '1.0',
+    _timestamp: new Date().toISOString(),
+    meta: {
+      datum: v('meta_datum'),
+      uhrzeit: v('meta_uhrzeit'),
+      anwesende: v('meta_anwesende'),
+    },
+    abschnitt1: {
+      raumaufteilung: v('s1_raumaufteilung'),
+      eingangstuer_cm: v('s1_tuer_breite'),
+      treppenhaus_cm: v('s1_treppen_breite'),
+      flaeche_qm: v('s1_flaeche'),
+      besonderheiten: v('s1_besonderheiten'),
+    },
+    bodenbelaege: {},
+    farbwunsch: v('s2_farbwunsch'),
+    mobiliar: {},
+    kueche: {
+      checks: collectChecks('kueche_checks', KUECHE_CHECKS),
+      notiz: v('s3_kueche_notiz'),
+    },
+    entsorgung: {
+      liste: v('s4_entsorgung'),
+      sperrmuell: v('s4_sperrmuell'),
+      saecke: v('s4_saecke'),
+    },
+    logistik: {
+      checks: collectChecks('logistik_checks', LOGISTIK_CHECKS),
+      kreuzung: v('s5_kreuzung'),
+    },
+    besondere_gegenstaende: {
+      checks: collectChecks('besonders_checks', BESONDERS_CHECKS),
+      notiz: v('s6_notiz'),
+    },
+    kartons: {},
+    mama_wuensche: {
+      wichtig: v('s8_wichtig'),
+      sorgen: v('s8_sorgen'),
+      sonstiges: v('s8_sonstiges'),
+    },
+    todos: [],
+  };
+
+  // Bodenbeläge
+  RAEUME.forEach(raum => {
+    const selectedChip = document.querySelector(`#chips_${raum.id} .chip.selected`);
+    data.bodenbelaege[raum.id] = {
+      name: raum.name,
+      laenge_m: v(`raum_${raum.id}_l`),
+      breite_m: v(`raum_${raum.id}_b`),
+      aktueller_belag: v(`raum_${raum.id}_aktuell`),
+      neuer_belag: selectedChip ? selectedChip.dataset.belag : '',
+      notiz: v(`raum_${raum.id}_notiz`),
+    };
+  });
+
+  // Mobiliar
+  MOEBEL.forEach(name => {
+    const id = name.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+    const checked = document.querySelector(`input[name="mob_${id}"]:checked`);
+    data.mobiliar[id] = { name, status: checked ? checked.value : '' };
+  });
+
+  // Kartons
+  KARTON_KATEGORIEN.forEach(kat => {
+    const id = kat.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+    data.kartons[id] = {
+      name: kat,
+      gross: v(`kart_${id}_gross`),
+      klein: v(`kart_${id}_klein`),
+      notiz: v(`kart_${id}_notiz`),
+    };
+  });
+  data.kartons.gesamt = {
+    gross: v('kart_gesamt_gross'),
+    klein: v('kart_gesamt_klein'),
+    notiz: v('kart_gesamt_notiz'),
+  };
+
+  // ToDos
+  for (let i = 0; i < todoCount; i++) {
+    const aufgabe = v(`todo_${i}_aufgabe`);
+    if (aufgabe) {
+      data.todos.push({
+        aufgabe,
+        zustaendig: v(`todo_${i}_zustaendig`),
+        bis_wann: v(`todo_${i}_biswann`),
+      });
+    }
+  }
+
+  return data;
+}
+
+function collectChecks(containerId, items) {
+  const result = {};
+  items.forEach(item => {
+    const id = 'chk_' + item.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+    const el = document.getElementById(id);
+    result[item] = el ? el.checked : false;
+  });
+  return result;
+}
+
+function v(id) {
+  const el = document.getElementById(id);
+  return el ? el.value : '';
+}
+
+// ═══════════════════ SAVE / LOAD ═══════════════════
+
+function saveAll() {
+  try {
+    const data = collectData();
+    localStorage.setItem('begehung_kelc_2026', JSON.stringify(data));
+    // Save chips state
+    const chipStates = {};
+    document.querySelectorAll('.chip.selected').forEach(c => {
+      chipStates[c.dataset.raum] = c.dataset.belag;
+    });
+    localStorage.setItem('begehung_chips', JSON.stringify(chipStates));
+    // Save checkboxes
+    const cbStates = {};
+    document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+      cbStates[cb.id] = cb.checked;
+    });
+    localStorage.setItem('begehung_checks', JSON.stringify(cbStates));
+    showSaveIndicator();
+  } catch(e) { console.warn('Save error', e); }
+}
+
+function loadAll() {
+  try {
+    const raw = localStorage.getItem('begehung_kelc_2026');
+    if (!raw) return;
+    const data = JSON.parse(raw);
+
+    // Simple fields
+    const simpleFields = [
+      ['meta_datum', data.meta?.datum],
+      ['meta_uhrzeit', data.meta?.uhrzeit],
+      ['meta_anwesende', data.meta?.anwesende],
+      ['s1_raumaufteilung', data.abschnitt1?.raumaufteilung],
+      ['s1_tuer_breite', data.abschnitt1?.eingangstuer_cm],
+      ['s1_treppen_breite', data.abschnitt1?.treppenhaus_cm],
+      ['s1_flaeche', data.abschnitt1?.flaeche_qm],
+      ['s1_besonderheiten', data.abschnitt1?.besonderheiten],
+      ['s2_farbwunsch', data.farbwunsch],
+      ['s3_kueche_notiz', data.kueche?.notiz],
+      ['s4_entsorgung', data.entsorgung?.liste],
+      ['s4_sperrmuell', data.entsorgung?.sperrmuell],
+      ['s4_saecke', data.entsorgung?.saecke],
+      ['s5_kreuzung', data.logistik?.kreuzung],
+      ['s6_notiz', data.besondere_gegenstaende?.notiz],
+      ['s8_wichtig', data.mama_wuensche?.wichtig],
+      ['s8_sorgen', data.mama_wuensche?.sorgen],
+      ['s8_sonstiges', data.mama_wuensche?.sonstiges],
+    ];
+    simpleFields.forEach(([id, val]) => {
+      const el = document.getElementById(id);
+      if (el && val) el.value = val;
+    });
+
+    // Räume
+    if (data.bodenbelaege) {
+      RAEUME.forEach(raum => {
+        const rd = data.bodenbelaege[raum.id];
+        if (!rd) return;
+        setVal(`raum_${raum.id}_l`, rd.laenge_m);
+        setVal(`raum_${raum.id}_b`, rd.breite_m);
+        setVal(`raum_${raum.id}_aktuell`, rd.aktueller_belag);
+        setVal(`raum_${raum.id}_notiz`, rd.notiz);
+      });
+    }
+
+    // Mobiliar
+    if (data.mobiliar) {
+      MOEBEL.forEach(name => {
+        const id = name.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+        const mob = data.mobiliar[id];
+        if (mob?.status) {
+          const radio = document.querySelector(`input[name="mob_${id}"][value="${mob.status}"]`);
+          if (radio) radio.checked = true;
+        }
+      });
+    }
+
+    // Kartons
+    if (data.kartons) {
+      KARTON_KATEGORIEN.forEach(kat => {
+        const id = kat.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+        const kd = data.kartons[id];
+        if (!kd) return;
+        setVal(`kart_${id}_gross`, kd.gross);
+        setVal(`kart_${id}_klein`, kd.klein);
+        setVal(`kart_${id}_notiz`, kd.notiz);
+      });
+      setVal('kart_gesamt_gross', data.kartons.gesamt?.gross);
+      setVal('kart_gesamt_klein', data.kartons.gesamt?.klein);
+      setVal('kart_gesamt_notiz', data.kartons.gesamt?.notiz);
+    }
+
+    // ToDos
+    if (data.todos?.length) {
+      // Already built 3 rows, fill them
+      data.todos.forEach((todo, i) => {
+        if (i >= todoCount) { addTodo(); }
+        setVal(`todo_${i}_aufgabe`, todo.aufgabe);
+        setVal(`todo_${i}_zustaendig`, todo.zustaendig);
+        setVal(`todo_${i}_biswann`, todo.bis_wann);
+      });
+    }
+
+    // Chips
+    const chipStates = JSON.parse(localStorage.getItem('begehung_chips') || '{}');
+    Object.entries(chipStates).forEach(([raum, belag]) => {
+      const chip = document.querySelector(`.chip[data-raum="${raum}"][data-belag="${belag}"]`);
+      if (chip) chip.classList.add('selected');
+    });
+
+    // Checkboxes
+    const cbStates = JSON.parse(localStorage.getItem('begehung_checks') || '{}');
+    Object.entries(cbStates).forEach(([id, checked]) => {
+      const cb = document.getElementById(id);
+      if (cb) {
+        cb.checked = checked;
+        if (checked) cb.closest('.check-item')?.classList.add('checked');
+      }
+    });
+
+  } catch(e) { console.warn('Load error', e); }
+}
+
+function setVal(id, val) {
+  const el = document.getElementById(id);
+  if (el && val !== undefined && val !== null && val !== '') el.value = val;
+}
+
+// ═══════════════════ EXPORT ═══════════════════
+
+function showExport() {
+  goTo(10);
+}
+
+function renderExport() {
+  const data = collectData();
+  document.getElementById('exportPreview').textContent = JSON.stringify(data, null, 2);
+}
+
+function downloadJSON() {
+  const data = collectData();
+  const json = JSON.stringify(data, null, 2);
+  const blob = new Blob([json], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  const date = data.meta?.datum?.replace(/\./g, '-') || 'export';
+  a.download = `Begehung-Kelc-${date}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function copyJSON() {
+  const data = collectData();
+  const json = JSON.stringify(data, null, 2);
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(json).then(() => {
+      showSaveIndicator();
+    });
+  } else {
+    const ta = document.createElement('textarea');
+    ta.value = json;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showSaveIndicator();
+  }
+}
+
+// ═══════════════════ START ═══════════════════
+init();
+</script>
+</body>
+</html>
